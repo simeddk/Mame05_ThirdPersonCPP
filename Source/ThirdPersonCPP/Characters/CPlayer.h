@@ -25,6 +25,7 @@ private:
 	void OnMoveRight(float InAxis);
 	void OnHorizontalLook(float InAxis);
 	void OnVerticalLook(float InAxis);
+	void OnZoom(float InAxis);
 
 	//Scene Component
 private:
@@ -39,5 +40,12 @@ private:
 	UPROPERTY(VisibleDefaultsOnly)
 		class UCStatusComponent* Status;
 
+	UPROPERTY(VisibleDefaultsOnly)
+		class UCOptionComponent* Option;
 
+	UPROPERTY(VisibleDefaultsOnly)
+		class UCStateComponent* State;
+
+	UPROPERTY(VisibleDefaultsOnly)
+		class UCMontagesComponent* Montages;
 };
