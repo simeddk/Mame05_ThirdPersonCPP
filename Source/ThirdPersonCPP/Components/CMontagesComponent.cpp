@@ -1,5 +1,6 @@
 #include "CMontagesComponent.h"
 #include "Global.h"
+#include "GameFramework/Character.h"
 
 UCMontagesComponent::UCMontagesComponent()
 {
@@ -32,5 +33,29 @@ void UCMontagesComponent::BeginPlay()
 		}
 	}
 
+	//CLog::Print(datas.Num());
 	
+}
+
+void UCMontagesComponent::PlayRoll()
+{
+	PlayAnimMontage(EStateType::Roll);
+}
+
+void UCMontagesComponent::PlayBackstep()
+{
+	PlayAnimMontage(EStateType::Backstep);
+}
+
+void UCMontagesComponent::PlayAnimMontage(EStateType InStateType)
+{
+	ACharacter* ownerCharacter = Cast<ACharacter>(GetOwner());
+	CheckNull(ownerCharacter);
+
+	FMontageData* data = Datas[(int32)InStateType];
+
+	if (!!data && !!data->AnimMontage)
+	{
+		ownerCharacter->PlayAnimMontage(data->AnimMontage, data->PlayRate, data->StartSection);
+	}
 }
