@@ -34,6 +34,11 @@ private:
 	void OnWalk();
 	void OffWalk();
 
+	void OnFist();
+	void OnOneHand();
+	void OnTwoHand();
+	void OnMagicBall();
+
 	//Common Montage Play
 private:
 	void Begin_Roll();
