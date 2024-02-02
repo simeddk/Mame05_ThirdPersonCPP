@@ -3,10 +3,13 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Materials/MaterialInstanceDynamic.h"
+#include "Materials/MaterialInstanceConstant.h"
 #include "Components/CStatusComponent.h"
 #include "Components/COptionComponent.h"
 #include "Components/CMontagesComponent.h"
 #include "Components/CActionComponent.h"
+#include "Actions/CActionData.h"
 
 ACPlayer::ACPlayer()
 {
@@ -54,7 +57,21 @@ void ACPlayer::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	UMaterialInstanceConstant* bodyMaterialAsset;
+	UMaterialInstanceConstant* logoMaterialAsset;
+
+	CHelpers::GetAssetDynamic<UMaterialInstanceConstant>(&bodyMaterialAsset, "MaterialInstanceConstant'/Game/Character/Materials/M_UE4Man_Body_Inst.M_UE4Man_Body_Inst'");
+	CHelpers::GetAssetDynamic<UMaterialInstanceConstant>(&logoMaterialAsset, "MaterialInstanceConstant'/Game/Character/Materials/M_UE4Man_ChestLogo.M_UE4Man_ChestLogo'");
+
+	BodyMaterial = UMaterialInstanceDynamic::Create(bodyMaterialAsset, this);
+	LogoMaterial = UMaterialInstanceDynamic::Create(logoMaterialAsset, this);
+
+	GetMesh()->SetMaterial(0, BodyMaterial);
+	GetMesh()->SetMaterial(1, LogoMaterial);
+
 	State->OnStateTypeChanged.AddDynamic(this, &ACPlayer::OnStateTypeChanged);
+
+	Action->SetUnaremdMode();
 }
 
 void ACPlayer::Tick(float DeltaTime)
@@ -210,14 +227,30 @@ void ACPlayer::Begin_Backstep()
 void ACPlayer::End_Roll()
 {
 	State->SetIdleMode();
+
+	if (!!Action->GetCurrentData() && Action->GetCurrentData()->EquipmentData.bLookForward == true)
+	{
+		bUseControllerRotationYaw = true;
+		GetCharacterMovement()->bOrientRotationToMovement = false;
+	}
+
 }
 
 void ACPlayer::End_Backstep()
 {
-	bUseControllerRotationYaw = false;
-	GetCharacterMovement()->bOrientRotationToMovement = true;
-
 	State->SetIdleMode();
+
+	if (!!Action->GetCurrentData() && Action->GetCurrentData()->EquipmentData.bLookForward == false)
+	{
+		bUseControllerRotationYaw = false;
+		GetCharacterMovement()->bOrientRotationToMovement = true;
+	}
+}
+
+void ACPlayer::SetBodyColor(FLinearColor InColor)
+{
+	BodyMaterial->SetVectorParameterValue("BodyColor", InColor);
+	LogoMaterial->SetVectorParameterValue("BodyColor", InColor);
 }
 
 void ACPlayer::OnStateTypeChanged(EStateType InPrevType, EStateType InNewType)

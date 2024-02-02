@@ -51,7 +51,11 @@ public:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Equipment")
 		FLinearColor EquipmentColor;
 
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Attachment")
+		TSubclassOf<class ACAttachment> AttachmentClass;
+
 
 private:
 	class ACEquipment* Equipment;
+	class ACAttachment* Attachment;
 };

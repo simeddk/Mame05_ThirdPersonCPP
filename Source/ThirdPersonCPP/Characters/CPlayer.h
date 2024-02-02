@@ -3,10 +3,11 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Components/CStateComponent.h"
+#include "ICharacter.h"
 #include "CPlayer.generated.h"
 
 UCLASS()
-class THIRDPERSONCPP_API ACPlayer : public ACharacter
+class THIRDPERSONCPP_API ACPlayer : public ACharacter, public IICharacter
 {
 	GENERATED_BODY()
 
@@ -48,6 +49,8 @@ public:
 	void End_Roll();
 	void End_Backstep();
 
+public:
+	virtual void SetBodyColor(FLinearColor InColor) override;
 
 private:
 	UFUNCTION()
@@ -77,4 +80,8 @@ private:
 
 	UPROPERTY(VisibleDefaultsOnly)
 		class UCActionComponent* Action;
+
+private:
+	class UMaterialInstanceDynamic* BodyMaterial;
+	class UMaterialInstanceDynamic* LogoMaterial;
 };
