@@ -40,6 +40,8 @@ private:
 	void OnTwoHand();
 	void OnMagicBall();
 
+	void OnDoAction();
+
 	//Common Montage Play
 private:
 	void Begin_Roll();

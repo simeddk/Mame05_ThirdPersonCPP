@@ -62,6 +62,9 @@ private:
 	void ChangeType(EActionType InNewType);
 
 public:
+	void DoAction();
+
+public:
 	UPROPERTY(BlueprintAssignable)
 		FActionTypeChangedSignature OnActionTypeChanged;
 
