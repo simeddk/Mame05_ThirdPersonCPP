@@ -4,6 +4,9 @@
 #include "GameFramework/Actor.h"
 #include "CAttachment.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FAttachmentBeginOverlapSignatrue, class ACharacter*, InAttacker, class AActor*, InCauser, class ACharacter*, InOtherCharacter);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FAttachmentEndOverlapSignatrue, class ACharacter*, InAttacker, class AActor*, InCauser, class ACharacter*, InOtherCharacter);
+
 UCLASS()
 class THIRDPERSONCPP_API ACAttachment : public AActor
 {
@@ -26,12 +29,33 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 		void OnUnequip();
 
+public:
+	void OnCollision();
+	void OffCollision();
+
+private:
+	UFUNCTION()
+		void OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION()
+		void OnComponentEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+public:
+	UPROPERTY(BlueprintAssignable)
+		FAttachmentBeginOverlapSignatrue OnAttachmentBeginOverlap;
+
+	UPROPERTY(BlueprintAssignable)
+		FAttachmentEndOverlapSignatrue OnAttachmentEndOverlap;
+
+
 private:
 	UPROPERTY(VisibleDefaultsOnly)
 		class USceneComponent* Root;
 
-
 protected:
 	UPROPERTY(BlueprintReadOnly)
 		class ACharacter* OwnerCharacter;
+
+private:
+	TArray<class UShapeComponent*> Collisions;
 };

@@ -14,4 +14,9 @@ public:
 	virtual void Begin_DoAction() override;
 	virtual void End_DoAction() override;
 	
+	virtual void OnAttachmentBeginOverlap(class ACharacter* InAttacker, class AActor* InCauser, class ACharacter* InOtherCharacter) override;
+	virtual void OnAttachmentEndOverlap(class ACharacter* InAttacker, class AActor* InCauser, class ACharacter* InOtherCharacter) override;
+
+private:
+	int32 ComboCount;
 };
