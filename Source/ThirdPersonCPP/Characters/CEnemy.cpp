@@ -101,13 +101,12 @@ float ACEnemy::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AContro
 	Attacker = Cast<ACharacter>(EventInstigator->GetPawn());
 	Causer = DamageCauser;
 
-	//Todo. »¡°£ÁÙ~~~
 	Status->DecreaseHealth(DamageValue);
 
 	if (Status->GetCurrentHealth() <= 0.f)
 	{
 		State->SetDeadMode();
-		return;
+		return DamageValue;
 	}
 
 	State->SetHittedMode();
@@ -117,8 +116,23 @@ float ACEnemy::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AContro
 
 void ACEnemy::SetBodyColor(FLinearColor InColor)
 {
+	if (State->IsHittedMode())
+	{
+		InColor *= 30.f;
+
+		LogoMaterial->SetScalarParameterValue("bUseLogoLight", 1.f);
+		LogoMaterial->SetVectorParameterValue("LogoColor", InColor);
+		return;
+	}
+
 	BodyMaterial->SetVectorParameterValue("BodyColor", InColor);
 	LogoMaterial->SetVectorParameterValue("BodyColor", InColor);
+}
+
+void ACEnemy::ResetLogoColor()
+{
+	LogoMaterial->SetScalarParameterValue("bUseLogoLight", 0.f);
+	LogoMaterial->SetVectorParameterValue("LogoColor", FLinearColor::Black);
 }
 
 void ACEnemy::OnStateTypeChanged(EStateType InPrevType, EStateType InNewType)
@@ -132,10 +146,32 @@ void ACEnemy::OnStateTypeChanged(EStateType InPrevType, EStateType InNewType)
 
 void ACEnemy::Hitted()
 {
+	//Update Health Widget
+	UCHealthWidget* healthWidgetObject = Cast<UCHealthWidget>(HealthWidget->GetUserWidgetObject());
+	CheckNull(healthWidgetObject);
+
+	healthWidgetObject->Update(Status->GetCurrentHealth(), Status->GetMaxHealth());
+
+	//Play Hitted Montage
+	Montages->PlayHitted();
+
+	//Look At Attacker
+	FVector start = GetActorLocation();
+	FVector target = Attacker->GetActorLocation();
+	SetActorRotation(UKismetMathLibrary::FindLookAtRotation(start, target));
+
+	//Launch Character
+	FVector direction = (start - target).GetSafeNormal();
+	LaunchCharacter(direction * DamageValue * LaunchValue, true, false);
+
+	//Set Hitted Color
+	SetBodyColor(FLinearColor::Red);
+	UKismetSystemLibrary::K2_SetTimer(this, "ResetLogoColor", 0.5f, false);
 }
 
 void ACEnemy::Dead()
 {
+	//Hidden Widgets
 }
 
 

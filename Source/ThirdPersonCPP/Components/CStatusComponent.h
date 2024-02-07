@@ -29,6 +29,9 @@ public:
 	void SetMove();
 	void SetStop();
 
+	void IncreaseHealth(float InAmount);
+	void DecreaseHealth(float InAmount);
+
 private:
 	UPROPERTY(EditAnywhere, Category = "Speed")
 		float SneakSpeed = 200.f;

@@ -23,6 +23,9 @@ public:
 public:
 	virtual void SetBodyColor(FLinearColor InColor);
 
+	UFUNCTION()
+		void ResetLogoColor();
+
 private:
 	UFUNCTION()
 		void OnStateTypeChanged(EStateType InPrevType, EStateType InNewType);
@@ -52,6 +55,10 @@ private:
 
 	UPROPERTY(VisibleDefaultsOnly)
 		class UCStateComponent* State;
+
+private:
+	UPROPERTY(EditAnywhere)
+		float LaunchValue = 25.f;
 
 private:
 	class UMaterialInstanceDynamic* BodyMaterial;
