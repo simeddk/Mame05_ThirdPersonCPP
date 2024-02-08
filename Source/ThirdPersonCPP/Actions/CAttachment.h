@@ -4,8 +4,8 @@
 #include "GameFramework/Actor.h"
 #include "CAttachment.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FAttachmentBeginOverlapSignatrue, class ACharacter*, InAttacker, class AActor*, InCauser, class ACharacter*, InOtherCharacter);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FAttachmentEndOverlapSignatrue, class ACharacter*, InAttacker, class AActor*, InCauser, class ACharacter*, InOtherCharacter);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FAttachmentBeginOverlapSignatrue, class UPrimitiveComponent*, InOverlappedComponent, class ACharacter*, InAttacker, class AActor*, InCauser, class ACharacter*, InOtherCharacter);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FAttachmentEndOverlapSignatrue, class UPrimitiveComponent*, InOverlappedComponent, class ACharacter*, InAttacker, class AActor*, InCauser, class ACharacter*, InOtherCharacter);
 
 UCLASS()
 class THIRDPERSONCPP_API ACAttachment : public AActor

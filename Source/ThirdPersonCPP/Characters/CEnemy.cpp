@@ -3,6 +3,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Materials/MaterialInstanceConstant.h"
 #include "Materials/MaterialInstanceDynamic.h"
+#include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Components/CActionComponent.h"
 #include "Components/CMontagesComponent.h"
@@ -172,6 +173,33 @@ void ACEnemy::Hitted()
 void ACEnemy::Dead()
 {
 	//Hidden Widgets
+	NameWidget->SetVisibility(false);
+	HealthWidget->SetVisibility(false);
+
+	//Ragdoll
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	GetMesh()->SetSimulatePhysics(true);
+	GetMesh()->GlobalAnimRateScale = 0.f;
+
+	//Add Force
+	FVector start = GetActorLocation();
+	FVector target = Attacker->GetActorLocation();
+	FVector direction = (start - target).GetSafeNormal();
+	FVector force = direction * LaunchValue * DamageValue;
+	GetMesh()->AddForceAtLocation(force, start);
+
+	//Off All Collisions
+	Action->OffAllCollisions();
+
+	//Todo. Destroy All Owing Children
+
+	UKismetSystemLibrary::K2_SetTimer(this, "End_Dead", DestroyPendingTime, false);
+}
+
+void ACEnemy::End_Dead()
+{
+	Destroy();
 }
 
 

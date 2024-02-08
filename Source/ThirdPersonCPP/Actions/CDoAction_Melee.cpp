@@ -53,9 +53,9 @@ void ACDoAction_Melee::End_DoAction()
 	StatusComp->SetMove();
 }
 
-void ACDoAction_Melee::OnAttachmentBeginOverlap(ACharacter* InAttacker, AActor* InCauser, ACharacter* InOtherCharacter)
+void ACDoAction_Melee::OnAttachmentBeginOverlap(UPrimitiveComponent* InOverlappedComponent, ACharacter* InAttacker, AActor* InCauser, ACharacter* InOtherCharacter)
 {
-	Super::OnAttachmentBeginOverlap(InAttacker, InCauser, InOtherCharacter);
+	Super::OnAttachmentBeginOverlap(InOverlappedComponent, InAttacker, InCauser, InOtherCharacter);
 
 	//Register HittedCharacters Array for Multiple Hit
 	int32 prevHittedCharactersNum = HittedCharacters.Num();
@@ -66,7 +66,6 @@ void ACDoAction_Melee::OnAttachmentBeginOverlap(ACharacter* InAttacker, AActor* 
 	FDamageEvent damageEvent;
 	InOtherCharacter->TakeDamage(Datas[ComboCount].Power, damageEvent, InAttacker->GetController(), InCauser);
 	
-
 	//Hit Stop
 	float hitStop = Datas[ComboCount].HitStop;
 	if (FMath::IsNearlyZero(hitStop) == false)
@@ -81,7 +80,7 @@ void ACDoAction_Melee::OnAttachmentBeginOverlap(ACharacter* InAttacker, AActor* 
 	if (!!effect)
 	{
 		FTransform trasnform = Datas[ComboCount].EffectTransform;
-		trasnform.AddToTranslation(InOtherCharacter->GetActorLocation());
+		trasnform.AddToTranslation(InOverlappedComponent->GetComponentLocation());
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), effect, trasnform);
 	}
 
@@ -95,9 +94,9 @@ void ACDoAction_Melee::OnAttachmentBeginOverlap(ACharacter* InAttacker, AActor* 
 	}
 }
 
-void ACDoAction_Melee::OnAttachmentEndOverlap(ACharacter* InAttacker, AActor* InCauser, ACharacter* InOtherCharacter)
+void ACDoAction_Melee::OnAttachmentEndOverlap(UPrimitiveComponent* InOverlappedComponent, ACharacter* InAttacker, AActor* InCauser, ACharacter* InOtherCharacter)
 {
-	Super::OnAttachmentEndOverlap(InAttacker, InCauser, InOtherCharacter);
+	Super::OnAttachmentEndOverlap(InOverlappedComponent, InAttacker, InCauser, InOtherCharacter);
 }
 
 void ACDoAction_Melee::ResetGlobalTimeDilation()

@@ -3,6 +3,7 @@
 #include "GameFramework/Character.h"
 #include "Actions/CActionData.h"
 #include "Actions/CEquipment.h"
+#include "Actions/CAttachment.h"
 #include "Actions/CDoAction.h"
 
 UCActionComponent::UCActionComponent()
@@ -63,6 +64,20 @@ void UCActionComponent::SetMagicBallMode()
 void UCActionComponent::SetTornadoMode()
 {
 	SetMode(EActionType::Tornado);
+}
+
+void UCActionComponent::OffAllCollisions()
+{
+	for (UCActionData* data : Datas)
+	{
+		if (!!data == false)
+			continue;
+
+		if (!!data->GetAttachment() == false)
+			continue;
+		
+		data->GetAttachment()->OffCollision();
+	}
 }
 
 void UCActionComponent::SetMode(EActionType InType)

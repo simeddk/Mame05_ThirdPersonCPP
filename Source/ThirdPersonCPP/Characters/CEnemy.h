@@ -34,6 +34,9 @@ private:
 	void Hitted();
 	void Dead();
 
+	UFUNCTION()
+		void End_Dead();
+
 	//Scene Component
 private:
 	UPROPERTY(VisibleDefaultsOnly)
@@ -59,6 +62,9 @@ private:
 private:
 	UPROPERTY(EditAnywhere)
 		float LaunchValue = 25.f;
+
+	UPROPERTY(EditAnywhere)
+		float DestroyPendingTime = 5.f;
 
 private:
 	class UMaterialInstanceDynamic* BodyMaterial;

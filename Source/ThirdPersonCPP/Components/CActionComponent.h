@@ -57,6 +57,8 @@ public:
 	void SetMagicBallMode();
 	void SetTornadoMode();
 
+	void OffAllCollisions();
+
 private:
 	void SetMode(EActionType InType);
 	void ChangeType(EActionType InNewType);
