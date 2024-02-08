@@ -76,6 +76,7 @@ void ACDoAction_Melee::OnAttachmentBeginOverlap(ACharacter* InAttacker, AActor* 
 	}
 
 	//Spawn Particle
+	//OwnerCharacter->ActionComp->GetCurrentData->GetAttachment->GetCollision[현재 발동된 충돌체]->GetWorldLocation
 	UParticleSystem* effect = Datas[ComboCount].Effect;
 	if (!!effect)
 	{
