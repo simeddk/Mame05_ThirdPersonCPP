@@ -117,3 +117,15 @@ void UCActionComponent::DoAction()
 		Datas[(int32)Type]->GetDoAction()->DoAction();
 	}
 }
+
+void UCActionComponent::DoSubAction(bool bEnable)
+{
+	CheckTrue(IsUnarmedMode());
+
+	if (!!Datas[(int32)Type] && !!Datas[(int32)Type]->GetDoAction())
+	{
+		bEnable
+			? Datas[(int32)Type]->GetDoAction()->BeginSubAction()
+			: Datas[(int32)Type]->GetDoAction()->EndSubAction();
+	}
+}

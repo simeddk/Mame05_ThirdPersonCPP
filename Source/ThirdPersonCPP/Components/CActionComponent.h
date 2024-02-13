@@ -65,6 +65,7 @@ private:
 
 public:
 	void DoAction();
+	void DoSubAction(bool bEnable);
 
 public:
 	UPROPERTY(BlueprintAssignable)
