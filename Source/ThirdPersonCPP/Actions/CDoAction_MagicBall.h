@@ -24,6 +24,10 @@ public:
 	virtual void EndSubAction() override;
 
 private:
+	UFUNCTION()
+		void OnMagicBallOverlap(FHitResult InHitResult);
+
+private:
 	UPROPERTY(VisibleInstanceOnly)
 		class UCAim* Aim;
 };

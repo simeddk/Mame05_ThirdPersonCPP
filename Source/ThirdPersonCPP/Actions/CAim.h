@@ -18,6 +18,7 @@ public:
 	
 public:
 	FORCEINLINE bool IsCanAim() { return SpringArm != nullptr && Camera != nullptr; }
+	FORCEINLINE bool IsZooming() { return bZooming; }
 
 	void On();
 	void Off();

@@ -10,9 +10,12 @@
 #include "Components/CStatusComponent.h"
 #include "Widgets/CNameWidget.h"
 #include "Widgets/CHealthWidget.h"
+#include "Actions/CActionData.h"
 
 ACEnemy::ACEnemy()
 {
+	PrimaryActorTick.bCanEverTick = true;
+
 	//Create SceneComponent
 	CHelpers::CreateSceneComponent<UWidgetComponent>(this, &NameWidget, "NameWidget", GetMesh());
 	CHelpers::CreateSceneComponent<UWidgetComponent>(this, &HealthWidget, "HealthWidget", GetMesh());
@@ -60,6 +63,7 @@ ACEnemy::ACEnemy()
 
 void ACEnemy::BeginPlay()
 {
+	//Set Dynamic Material
 	UMaterialInstanceConstant* bodyMaterialAsset, *logoMaterialAsset, *dissolveMaterialAsset;
 
 	CHelpers::GetAssetDynamic<UMaterialInstanceConstant>(&bodyMaterialAsset, "MaterialInstanceConstant'/Game/Character/Materials/M_UE4Man_Body_Inst.M_UE4Man_Body_Inst'");
@@ -68,15 +72,18 @@ void ACEnemy::BeginPlay()
 
 	BodyMaterial = UMaterialInstanceDynamic::Create(bodyMaterialAsset, this);
 	LogoMaterial = UMaterialInstanceDynamic::Create(logoMaterialAsset, this);
-	DissolveMaterial = UMaterialInstanceDynamic::Create(logoMaterialAsset, this);
+	DissolveMaterial = UMaterialInstanceDynamic::Create(dissolveMaterialAsset, this);
 
 	GetMesh()->SetMaterial(0, BodyMaterial);
 	GetMesh()->SetMaterial(1, LogoMaterial);
 
+	//Bind StateType Changed Event
 	State->OnStateTypeChanged.AddDynamic(this, &ACEnemy::OnStateTypeChanged);
 
+	//Blueprint BeginPlay
 	Super::BeginPlay();
 
+	//Initialize Widget
 	NameWidget->InitWidget();
 	UCNameWidget* nameWidgetObject = Cast<UCNameWidget>(NameWidget->GetUserWidgetObject());
 	if (!!nameWidgetObject)
@@ -97,13 +104,24 @@ void ACEnemy::BeginPlay()
 		healthWidgetObject->Update(currentHP, maxHP);
 	}
 
+	//Bind Dissovle Timeline Event
 	FOnTimelineFloat onProgress;
-	onProgress.BindUFunction(this, "StartDissolve"); //Todo. Make Function
+	onProgress.BindUFunction(this, "StartDissolve");
 	DissolveTimeline.AddInterpFloat(DissolveCurve, onProgress);
 
-	//Todo. Timeline Finished Delegation05
+	FOnTimelineEvent onFinish;
+	onFinish.BindUFunction(this, "EndDissolve");
+	DissolveTimeline.SetTimelineFinishedFunc(onFinish);
 
+	//-----
 	Action->SetUnaremdMode();
+}
+
+void ACEnemy::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	DissolveTimeline.TickTimeline(DeltaTime);
 }
 
 float ACEnemy::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -127,6 +145,8 @@ float ACEnemy::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AContro
 
 void ACEnemy::SetBodyColor(FLinearColor InColor)
 {
+	CheckTrue(State->IsDeadMode());
+
 	if (State->IsHittedMode())
 	{
 		InColor *= 30.f;
@@ -182,6 +202,8 @@ void ACEnemy::Hitted()
 
 void ACEnemy::Dead()
 {
+	//CheckFalse(State->IsDeadMode());
+
 	//Hidden Widgets
 	NameWidget->SetVisibility(false);
 	HealthWidget->SetVisibility(false);
@@ -202,14 +224,33 @@ void ACEnemy::Dead()
 	//Off All Collisions
 	Action->OffAllCollisions();
 
-	//Todo. Destroy All Owing Children
+	//Set Dissovle Material & Play Dissolve Timeline
+	FLinearColor equipmentColor = Action->GetCurrentData()->EquipmentColor;
+	DissolveMaterial->SetVectorParameterValue("BaseColor", equipmentColor);
 
-	UKismetSystemLibrary::K2_SetTimer(this, "End_Dead", DestroyPendingTime, false);
+	for (int32 i = 0; i < GetMesh()->GetNumMaterials(); i++)
+		GetMesh()->SetMaterial(i, DissolveMaterial);
+
+	DissolveTimeline.PlayFromStart();
 }
 
 void ACEnemy::End_Dead()
 {
+	//Todo. Destroy All Owing Children
+
 	Destroy();
+}
+
+void ACEnemy::StartDissolve(float Output)
+{
+	CheckNull(DissolveMaterial);
+
+	DissolveMaterial->SetScalarParameterValue("Amount", Output);
+}
+
+void ACEnemy::EndDissolve()
+{
+	UKismetSystemLibrary::K2_SetTimer(this, "End_Dead", DestroyPendingTime, false);
 }
 
 
