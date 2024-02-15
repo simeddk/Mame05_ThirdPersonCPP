@@ -12,6 +12,9 @@ void ACDoAction_MagicBall::BeginPlay()
 
 	Aim = NewObject<UCAim>();
 	Aim->BeginPlay(OwnerCharacter);
+
+	ActionComp = CHelpers::GetComponent<UCActionComponent>(OwnerCharacter);
+	ActionComp->OnActionTypeChanged.AddDynamic(this, &ACDoAction_MagicBall::AbortByActionTypeChanged);
 }
 
 void ACDoAction_MagicBall::Tick(float DeltaTime)
@@ -20,6 +23,7 @@ void ACDoAction_MagicBall::Tick(float DeltaTime)
 
 	Aim->Tick(DeltaTime);
 }
+
 
 void ACDoAction_MagicBall::DoAction()
 {
@@ -46,10 +50,15 @@ void ACDoAction_MagicBall::Begin_DoAction()
 
 	//Get Hand Socket Location
 	FVector handLocation = OwnerCharacter->GetMesh()->GetSocketLocation("middle_01_r");
-	transform.AddToTranslation(handLocation);
 
-	//Get Controller Rotation
-	transform.SetRotation(FQuat(OwnerCharacter->GetControlRotation()));
+	//Get Camera Location & Rotation
+	FVector location;
+	FRotator rotation;
+	OwnerCharacter->GetController()->GetPlayerViewPoint(location, rotation);
+
+	location = location + rotation.Vector() * ((handLocation - location) | rotation.Vector());
+	transform.AddToTranslation(location);
+	transform.SetRotation(FQuat(rotation));
 
 	//Spawn MagicBall
 	ACMagicBall* magicBall = GetWorld()->SpawnActorDeferred<ACMagicBall>(Datas[0].ProjectieClass, transform, OwnerCharacter, OwnerCharacter, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
@@ -87,4 +96,13 @@ void ACDoAction_MagicBall::OnMagicBallOverlap(FHitResult InHitResult)
 {
 	FDamageEvent damageEvent;
 	InHitResult.GetActor()->TakeDamage(Datas[0].Power, damageEvent, OwnerCharacter->GetController(), this);
+}
+
+
+void ACDoAction_MagicBall::AbortByActionTypeChanged(EActionType InPrevType, EActionType InNewType)
+{
+	CheckFalse(Aim->IsCanAim());
+	CheckFalse(Aim->IsZooming());
+	
+	Aim->Off();
 }
