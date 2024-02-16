@@ -20,6 +20,8 @@ public:
 	virtual void Begin_DoAction() override;
 	virtual void End_DoAction() override;
 	
+private:
+	bool GetCursorLocationAndRotation(FVector& OutLocation, FRotator& OutRotation);
 
 private:
 	class UStaticMeshComponent* Preview;
