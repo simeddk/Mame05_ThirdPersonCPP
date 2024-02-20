@@ -22,6 +22,7 @@ public:
 	
 private:
 	bool GetCursorLocationAndRotation(FVector& OutLocation, FRotator& OutRotation);
+	void SetPreviewColor(FLinearColor InColor);
 
 private:
 	class UStaticMeshComponent* Preview;

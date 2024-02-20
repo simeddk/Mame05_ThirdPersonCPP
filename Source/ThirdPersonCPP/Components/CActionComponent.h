@@ -49,13 +49,13 @@ public:
 		FORCEINLINE bool IsTornadoMode() { return Type == EActionType::Tornado; }
 
 public:
-	void SetUnaremdMode();
-	void SetFistMode();
-	void SetOneHandMode();
-	void SetTwoHandMode();
-	void SetWarpMode();
-	void SetMagicBallMode();
-	void SetTornadoMode();
+	UFUNCTION(BlueprintCallable) void SetUnaremdMode();
+	UFUNCTION(BlueprintCallable) void SetFistMode();
+	UFUNCTION(BlueprintCallable) void SetOneHandMode();
+	UFUNCTION(BlueprintCallable) void SetTwoHandMode();
+	UFUNCTION(BlueprintCallable) void SetWarpMode();
+	UFUNCTION(BlueprintCallable) void SetMagicBallMode();
+	UFUNCTION(BlueprintCallable) void SetTornadoMode();
 
 	void OffAllCollisions();
 

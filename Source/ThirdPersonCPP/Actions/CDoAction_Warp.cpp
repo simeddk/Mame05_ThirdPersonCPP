@@ -33,7 +33,9 @@ void ACDoAction_Warp::Tick(float DeltaTime)
 	FRotator rotation;
 	if (GetCursorLocationAndRotation(location, rotation))
 	{
-		Preview->SetVisibility(true);
+		//if (StateComp->IsIdleMode())
+			Preview->SetVisibility(true);
+
 		Preview->SetWorldLocation(location + Preview->GetUpVector() * 125);
 		Preview->SetWorldRotation(rotation);
 	}
@@ -52,6 +54,8 @@ void ACDoAction_Warp::DoAction()
 
 	OwnerCharacter->PlayAnimMontage(Datas[0].AnimMontage, Datas[0].PlayRate, Datas[0].StartSection);
 	Datas[0].bCanMove ? StatusComp->SetMove() : StatusComp->SetStop();
+
+	SetPreviewColor(FLinearColor(1, 0, 0, 1));
 }
 
 void ACDoAction_Warp::Begin_DoAction()
@@ -79,6 +83,8 @@ void ACDoAction_Warp::End_DoAction()
 
 	StateComp->SetIdleMode();
 	StatusComp->SetMove();
+
+	SetPreviewColor(FLinearColor(0, 1, 1, 1));
 }
 
 bool ACDoAction_Warp::GetCursorLocationAndRotation(FVector& OutLocation, FRotator& OutRotation)
@@ -103,4 +109,12 @@ bool ACDoAction_Warp::GetCursorLocationAndRotation(FVector& OutLocation, FRotato
 	}
 
 	return false;
+}
+
+void ACDoAction_Warp::SetPreviewColor(FLinearColor InColor)
+{
+	UMaterialInstanceDynamic* material = Cast<UMaterialInstanceDynamic>(Preview->GetMaterial(0));
+	CheckNull(material);
+
+	material->SetVectorParameterValue("Emissive", InColor);
 }

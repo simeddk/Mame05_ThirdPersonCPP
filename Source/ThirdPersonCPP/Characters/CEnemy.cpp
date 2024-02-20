@@ -113,8 +113,6 @@ void ACEnemy::BeginPlay()
 	onFinish.BindUFunction(this, "EndDissolve");
 	DissolveTimeline.SetTimelineFinishedFunc(onFinish);
 
-	//-----
-	Action->SetUnaremdMode();
 }
 
 void ACEnemy::Tick(float DeltaTime)
