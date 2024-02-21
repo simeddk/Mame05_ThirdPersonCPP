@@ -263,7 +263,8 @@ void ACPlayer::End_Roll()
 {
 	State->SetIdleMode();
 
-	if (!!Action->GetCurrentData() && Action->GetCurrentData()->EquipmentData.bLookForward == true)
+	if (!!Action->GetCurrentDataAsset()
+		&& Action->GetCurrentDataAsset()->GetEquipmentData().bLookForward == true)
 	{
 		bUseControllerRotationYaw = true;
 		GetCharacterMovement()->bOrientRotationToMovement = false;
@@ -275,7 +276,8 @@ void ACPlayer::End_Backstep()
 {
 	State->SetIdleMode();
 
-	if (!!Action->GetCurrentData() && Action->GetCurrentData()->EquipmentData.bLookForward == false)
+	if ( !!Action->GetCurrentDataAsset()
+		 && Action->GetCurrentDataAsset()->GetEquipmentData().bLookForward == false)
 	{
 		bUseControllerRotationYaw = false;
 		GetCharacterMovement()->bOrientRotationToMovement = true;

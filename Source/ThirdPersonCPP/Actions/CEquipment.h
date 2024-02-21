@@ -22,7 +22,9 @@ protected:
 public:
 	FORCEINLINE void SetData(FEquipmentData& InData) { Data = InData; }
 	FORCEINLINE void SetColor(FLinearColor& InColor) { Color = InColor; }
+	
 	FORCEINLINE const bool* IsEquippedThis() { return &bEquippedThis; }
+	FORCEINLINE FLinearColor GetColor() { return Color; }
 
 public:
 	UFUNCTION(BlueprintNativeEvent)

@@ -2,9 +2,11 @@
 #include "Global.h"
 #include "GameFramework/Character.h"
 #include "Actions/CActionData.h"
+#include "Actions/CActionData_Spawned.h"
 #include "Actions/CEquipment.h"
 #include "Actions/CAttachment.h"
 #include "Actions/CDoAction.h"
+
 
 UCActionComponent::UCActionComponent()
 {
@@ -20,8 +22,8 @@ void UCActionComponent::BeginPlay()
 
 	for (int32 i = 0; i < (int32)EActionType::Max; i++)
 	{
-		if (!!Datas[i])
-			Datas[i]->BeginPlay(ownerCharacter);
+		if (!!DataAssets[i])
+			DataAssets[i]->BeginPlay(ownerCharacter, &Datas[i]);
 	}
 }
 
@@ -68,7 +70,7 @@ void UCActionComponent::SetTornadoMode()
 
 void UCActionComponent::OffAllCollisions()
 {
-	for (UCActionData* data : Datas)
+	for (UCActionData_Spawned* data : Datas)
 	{
 		if (!!data == false)
 			continue;
@@ -77,6 +79,21 @@ void UCActionComponent::OffAllCollisions()
 			continue;
 		
 		data->GetAttachment()->OffCollision();
+	}
+}
+
+void UCActionComponent::End_Dead()
+{
+	for (int32 i  = 0; i < (int32)EActionType::Max; i++)
+	{
+		if (!!Datas[i] && Datas[i]->GetAttachment())
+			Datas[i]->GetAttachment()->Destroy();
+		
+		if (!!Datas[i] && Datas[i]->GetEquipment())
+			Datas[i]->GetEquipment()->Destroy();
+
+		if (!!Datas[i] && Datas[i]->GetDoAction())
+			Datas[i]->GetDoAction()->Destroy();
 	}
 }
 

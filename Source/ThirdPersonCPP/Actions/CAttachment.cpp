@@ -15,8 +15,11 @@ void ACAttachment::BeginPlay()
 	GetComponents<UShapeComponent>(Collisions);
 	for (UShapeComponent* collision : Collisions)
 	{
-		collision->OnComponentBeginOverlap.AddDynamic(this, &ACAttachment::OnComponentBeginOverlap);
-		collision->OnComponentEndOverlap.AddDynamic(this, &ACAttachment::OnComponentEndOverlap);
+		if (!!collision)
+		{
+			collision->OnComponentBeginOverlap.AddDynamic(this, &ACAttachment::OnComponentBeginOverlap);
+			collision->OnComponentEndOverlap.AddDynamic(this, &ACAttachment::OnComponentEndOverlap);
+		}
 	}
 
 	OffCollision();

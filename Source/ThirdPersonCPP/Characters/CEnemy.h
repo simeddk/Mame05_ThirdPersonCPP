@@ -35,9 +35,7 @@ private:
 private:
 	void Hitted();
 	void Dead();
-
-	UFUNCTION()
-		void End_Dead();
+	void End_Dead();
 
 	UFUNCTION()
 		void StartDissolve(float Output);
