@@ -105,6 +105,11 @@ void ACPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction("SubAction", EInputEvent::IE_Released, this, &ACPlayer::OffDoSubAction);
 }
 
+FGenericTeamId ACPlayer::GetGenericTeamId() const
+{
+	return FGenericTeamId(TeamID);
+}
+
 void ACPlayer::OnMoveForward(float InAxis)
 {
 	CheckTrue(FMath::IsNearlyZero(InAxis));

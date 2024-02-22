@@ -4,10 +4,11 @@
 #include "GameFramework/Character.h"
 #include "Components/CStateComponent.h"
 #include "ICharacter.h"
+#include "GenericTeamAgentInterface.h"
 #include "CPlayer.generated.h"
 
 UCLASS()
-class THIRDPERSONCPP_API ACPlayer : public ACharacter, public IICharacter
+class THIRDPERSONCPP_API ACPlayer : public ACharacter, public IICharacter, public IGenericTeamAgentInterface
 {
 	GENERATED_BODY()
 
@@ -20,6 +21,7 @@ protected:
 public:	
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	virtual FGenericTeamId GetGenericTeamId() const override;
 
 	//Axis Event
 private:
@@ -87,6 +89,10 @@ private:
 
 	UPROPERTY(VisibleDefaultsOnly)
 		class UCActionComponent* Action;
+
+private:
+	UPROPERTY(EditDefaultsOnly, Category = "Team")
+		uint8 TeamID = 0;
 
 private:
 	class UMaterialInstanceDynamic* BodyMaterial;
