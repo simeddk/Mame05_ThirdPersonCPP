@@ -21,6 +21,10 @@ protected:
 public:
 	virtual void Tick(float DeltaTime) override;
 
+public:
+	float GetSightRadius();
+	FORCEINLINE float GetBehaviorRange() { return BehaviorRange; }
+
 private:
 	UFUNCTION()
 		void OnPerceptionUpdated(const TArray<AActor*>& UpdatedActors);
