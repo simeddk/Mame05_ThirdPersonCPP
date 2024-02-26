@@ -4,6 +4,12 @@
 #include "AIController.h"
 #include "CAIController.generated.h"
 
+UENUM(BlueprintType)
+enum class EDrawDebugSenseType : uint8
+{
+	Sphere, Circle
+};
+
 UCLASS()
 class THIRDPERSONCPP_API ACAIController : public AAIController
 {
@@ -39,6 +45,9 @@ private:
 private:
 	UPROPERTY(EditAnywhere)
 		bool bDrawDebug = true;
+	
+	UPROPERTY(EditAnywhere)
+		EDrawDebugSenseType DrawDebugType;
 
 	UPROPERTY(EditAnywhere)
 		float BehaviorRange = 150.f;

@@ -68,8 +68,18 @@ void ACAIController::Tick(float DeltaTime)
 	if (bDrawDebug)
 	{
 		FVector center = OwnerEnemy->GetActorLocation();
-		DrawDebugSphere(GetWorld(), center, Sight->SightRadius, 30, FColor::Green);
-		DrawDebugSphere(GetWorld(), center, BehaviorRange, 30, FColor::Red);
+
+		//Draw Debug Sphere
+		if (DrawDebugType == EDrawDebugSenseType::Sphere)
+		{
+			DrawDebugSphere(GetWorld(), center, Sight->SightRadius, 30, FColor::Green);
+			DrawDebugSphere(GetWorld(), center, BehaviorRange, 30, FColor::Red);
+			return;
+		}
+
+		//Draw Debug Circle
+		DrawDebugCircle(GetWorld(), center, Sight->SightRadius, 300, FColor::Green, false, -1.0f, 0, 0, FVector::RightVector, FVector::ForwardVector);
+		DrawDebugCircle(GetWorld(), center, BehaviorRange, 300, FColor::Red, false, -1.0f, 0, 0, FVector::RightVector, FVector::ForwardVector);
 	}
 }
 

@@ -1,18 +1,17 @@
-#include "CBTService_Melee.h"
+#include "CBTService_Magic.h"
 #include "Global.h"
 #include "Characters/CAIController.h"
 #include "Characters/CPlayer.h"
 #include "Characters/CEnemy_AI.h"
 #include "Components/CBehaviorComponent.h"
 #include "Components/CStateComponent.h"
-#include "Components/CPatrolComponent.h"
 
-UCBTService_Melee::UCBTService_Melee()
+UCBTService_Magic::UCBTService_Magic()
 {
-	NodeName = "Root_Melee";
+	NodeName = "Root_Magic";
 }
 
-void UCBTService_Melee::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
+void UCBTService_Magic::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
 	Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
 
@@ -29,9 +28,6 @@ void UCBTService_Melee::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 	UCStateComponent* stateComp = CHelpers::GetComponent<UCStateComponent>(enemy);
 	CheckNull(stateComp);
 
-	UCPatrolComponent* patrolComp = CHelpers::GetComponent<UCPatrolComponent>(enemy);
-	CheckNull(patrolComp);
-
 	//Set Behavior Hitted
 	if (stateComp->IsHittedMode())
 	{
@@ -45,31 +41,26 @@ void UCBTService_Melee::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 	//No Perceived Player
 	if (player == nullptr)
 	{
-		if (patrolComp != nullptr && patrolComp->IsPathValid())
-		{
-			behaviorComp->SetPatrolMode();
-			return;
-		}
-
 		behaviorComp->SetWaitMode();
+		controller->ClearFocus(EAIFocusPriority::LastFocusPriority); //Todo.
 		return;
 	}
 
 	//Perceived Player
+	controller->SetFocus(player);
 	float distance = enemy->GetDistanceTo(player);
 
 	//In BehaviorRange
 	if (distance < controller->GetBehaviorRange())
 	{
-		behaviorComp->SetActionMode();
+		behaviorComp->SetAvoidMode();
 		return;
 	}
 
 	//In Sight
 	if (distance < controller->GetSightRadius())
 	{
-		behaviorComp->SetApproachMode();
+		behaviorComp->SetActionMode();
 		return;
 	}
-	
 }
