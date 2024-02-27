@@ -130,3 +130,8 @@ void ACDoAction_Tornado::Finish()
 	
 	UKismetSystemLibrary::K2_ClearTimer(this, "TickDamage");
 }
+
+void ACDoAction_Tornado::Abort()
+{
+	Finish();
+}

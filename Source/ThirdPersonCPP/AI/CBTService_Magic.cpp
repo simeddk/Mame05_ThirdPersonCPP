@@ -28,6 +28,13 @@ void UCBTService_Magic::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 	UCStateComponent* stateComp = CHelpers::GetComponent<UCStateComponent>(enemy);
 	CheckNull(stateComp);
 
+	//Check Dead
+	if (stateComp->IsDeadMode())
+	{
+		behaviorComp->SetWaitMode();
+		return;
+	}
+
 	//Set Behavior Hitted
 	if (stateComp->IsHittedMode())
 	{
@@ -42,7 +49,7 @@ void UCBTService_Magic::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 	if (player == nullptr)
 	{
 		behaviorComp->SetWaitMode();
-		controller->ClearFocus(EAIFocusPriority::LastFocusPriority); //Todo.
+		controller->ClearFocus(EAIFocusPriority::LastFocusPriority);
 		return;
 	}
 

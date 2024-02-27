@@ -5,6 +5,7 @@
 #include "Camera/CameraComponent.h"
 #include "Materials/MaterialInstanceDynamic.h"
 #include "Materials/MaterialInstanceConstant.h"
+#include "Components/CapsuleComponent.h"
 #include "Components/CStatusComponent.h"
 #include "Components/COptionComponent.h"
 #include "Components/CMontagesComponent.h"
@@ -108,6 +109,27 @@ void ACPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 FGenericTeamId ACPlayer::GetGenericTeamId() const
 {
 	return FGenericTeamId(TeamID);
+}
+
+float ACPlayer::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	DamageValue = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
+	Attacker = Cast<ACharacter>(EventInstigator->GetPawn());
+	Causer = DamageCauser;
+
+	Action->AbortedByDamaged();
+
+	Status->DecreaseHealth(DamageValue);
+
+	if (Status->GetCurrentHealth() <= 0.f)
+	{
+		State->SetDeadMode();
+		return DamageValue;
+	}
+
+	State->SetHittedMode();
+
+	return DamageValue;
 }
 
 void ACPlayer::OnMoveForward(float InAxis)
@@ -233,6 +255,45 @@ void ACPlayer::OffDoSubAction()
 	Action->DoSubAction(false);
 }
 
+void ACPlayer::Hitted()
+{
+	//Update Health Widget
+	//UCHealthWidget* healthWidgetObject = Cast<UCHealthWidget>(HealthWidget->GetUserWidgetObject());
+	//CheckNull(healthWidgetObject);
+
+	//healthWidgetObject->Update(Status->GetCurrentHealth(), Status->GetMaxHealth());
+
+	//Play Hitted Montage
+	Montages->PlayHitted();
+
+}
+
+void ACPlayer::Dead()
+{
+	//Ragdoll
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	GetMesh()->SetSimulatePhysics(true);
+	GetMesh()->GlobalAnimRateScale = 0.f;
+
+	//Add Force
+	FVector start = GetActorLocation();
+	FVector target = Attacker->GetActorLocation();
+	FVector direction = (start - target).GetSafeNormal();
+	FVector force = direction * LaunchValue * DamageValue;
+	GetMesh()->AddForceAtLocation(force, start);
+
+	//Off All Collisions
+	Action->OffAllCollisions();
+
+	UKismetSystemLibrary::K2_SetTimer(this, "End_Dead", 5.f, false);
+}
+
+void ACPlayer::End_Dead()
+{
+	CLog::Log("Player is dead T_T");
+}
+
 void ACPlayer::Begin_Roll()
 {
 	bUseControllerRotationYaw = false;
@@ -301,6 +362,8 @@ void ACPlayer::OnStateTypeChanged(EStateType InPrevType, EStateType InNewType)
 	{
 		case EStateType::Roll:		Begin_Roll();		break;
 		case EStateType::Backstep:	Begin_Backstep();	break;
+		case EStateType::Hitted:	Hitted();			break;
+		case EStateType::Dead:		Dead();			break;
 	}
 }
 

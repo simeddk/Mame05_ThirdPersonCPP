@@ -23,6 +23,8 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual FGenericTeamId GetGenericTeamId() const override;
 
+	virtual float TakeDamage(float Damage, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+
 	//Axis Event
 private:
 	void OnMoveForward(float InAxis);
@@ -48,6 +50,12 @@ private:
 
 	void OnDoSubAction();
 	void OffDoSubAction();
+
+	void Hitted();
+	void Dead();
+
+	UFUNCTION()
+		void End_Dead();
 
 	//Common Montage Play
 private:
@@ -94,7 +102,14 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Team")
 		uint8 TeamID = 0;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Dead")
+		float LaunchValue = 100.f;
+
 private:
 	class UMaterialInstanceDynamic* BodyMaterial;
 	class UMaterialInstanceDynamic* LogoMaterial;
+
+	float DamageValue;
+	class ACharacter* Attacker;
+	class AActor* Causer;
 };

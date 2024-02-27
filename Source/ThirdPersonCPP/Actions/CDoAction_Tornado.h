@@ -20,6 +20,8 @@ public:
 	virtual void Begin_DoAction() override;
 	virtual void End_DoAction() override;
 
+	virtual void Abort() override;
+
 private:
 	UFUNCTION()
 		void TickDamage();
