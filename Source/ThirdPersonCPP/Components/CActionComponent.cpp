@@ -105,7 +105,7 @@ void UCActionComponent::AbortedByDamaged()
 	Datas[(int32)Type]->GetEquipment()->Begin_Equip();
 	Datas[(int32)Type]->GetEquipment()->End_Equip();
 
-	CheckNull(Datas[(int32)Type]->GetDoAction()); //Todo. Check Build
+	CheckNull(Datas[(int32)Type]->GetDoAction());
 	Datas[(int32)Type]->GetDoAction()->Abort();
 }
 
