@@ -6,6 +6,7 @@
 #include "Materials/MaterialInstanceDynamic.h"
 #include "Materials/MaterialInstanceConstant.h"
 #include "Blueprint/UserWidget.h"
+#include "Components/PostProcessComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/CStatusComponent.h"
 #include "Components/COptionComponent.h"
@@ -21,6 +22,7 @@ ACPlayer::ACPlayer()
 	//Create Scene Component
 	CHelpers::CreateSceneComponent(this, &SpringArm, "SpringArm", GetMesh());
 	CHelpers::CreateSceneComponent(this, &Camera, "Camera", SpringArm);
+	CHelpers::CreateSceneComponent(this, &PostProcess, "PostProcess", GetRootComponent());
 
 	//Create Actor Component
 	CHelpers::CreateActorComponent(this, &Action, "Action");
@@ -55,6 +57,13 @@ ACPlayer::ACPlayer()
 	GetCharacterMovement()->MaxWalkSpeed = Status->GetSprintSpeed();
 	GetCharacterMovement()->RotationRate = FRotator(0, 720, 0);
 
+	// -> PostProcess
+	PostProcess->Settings.bOverride_VignetteIntensity = false;
+	PostProcess->Settings.VignetteIntensity = 2.f;
+
+	PostProcess->Settings.bOverride_DepthOfFieldFocalDistance = false;
+	PostProcess->Settings.DepthOfFieldFocalDistance = 2.f;
+
 	//Get Widget ClassRef
 	CHelpers::GetClass<UCPlayerHealthWidget>(&HealthWidgetClass, "WidgetBlueprint'/Game/Widgets/WB_PlayerHealth.WB_PlayerHealth_C'");
 }
@@ -78,6 +87,10 @@ void ACPlayer::BeginPlay()
 
 	//Bind StateType Chagned Event
 	State->OnStateTypeChanged.AddDynamic(this, &ACPlayer::OnStateTypeChanged);
+
+	//Bind Hitted Event
+	OnHittedEvent.AddDynamic(this, &ACPlayer::End_Roll);
+	OnHittedEvent.AddDynamic(this, &ACPlayer::End_Backstep);
 
 	Action->SetUnaremdMode();
 
@@ -129,7 +142,7 @@ float ACPlayer::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AContr
 	Attacker = Cast<ACharacter>(EventInstigator->GetPawn());
 	Causer = DamageCauser;
 
-	Action->AbortedByDamaged();
+	//Action->AbortedByDamaged();
 
 	Status->DecreaseHealth(DamageValue);
 	HealthWidget->Update();
@@ -141,6 +154,8 @@ float ACPlayer::TakeDamage(float Damage, FDamageEvent const& DamageEvent, AContr
 	}
 
 	State->SetHittedMode();
+
+	Action->AbortedByDamaged();
 
 	return DamageValue;
 }
@@ -268,17 +283,13 @@ void ACPlayer::OffDoSubAction()
 	Action->DoSubAction(false);
 }
 
-void ACPlayer::Hitted()
+void ACPlayer::Hitted(EStateType InPrevType)
 {
-	//Update Health Widget
-	//UCHealthWidget* healthWidgetObject = Cast<UCHealthWidget>(HealthWidget->GetUserWidgetObject());
-	//CheckNull(healthWidgetObject);
+	if (OnHittedEvent.IsBound())
+		OnHittedEvent.Broadcast();
 
-	//healthWidgetObject->Update(Status->GetCurrentHealth(), Status->GetMaxHealth());
-
-	//Play Hitted Montage
+	Status->SetStop();
 	Montages->PlayHitted();
-
 }
 
 void ACPlayer::Dead()
@@ -299,13 +310,24 @@ void ACPlayer::Dead()
 	//Off All Collisions
 	Action->OffAllCollisions();
 
-	UKismetSystemLibrary::K2_SetTimer(this, "End_Dead", 5.f, false);
+	//Dead Effect
+	PostProcess->Settings.bOverride_VignetteIntensity = true;
+	PostProcess->Settings.bOverride_DepthOfFieldFocalDistance = true;
+
+	DisableInput(GetController<APlayerController>());
+
+	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.25f);
+
+	//End Dead Timer
+	UKismetSystemLibrary::K2_SetTimer(this, "End_Dead", 2.f, false);
 }
 
 void ACPlayer::End_Dead()
 {
-	//Todo. Dynamic Combat System
-	Camera->DetachFromComponent(FDetachmentTransformRules(EDetachmentRule::KeepWorld, true));
+	APlayerController* controller = GetController<APlayerController>();
+	CheckNull(controller);
+
+	controller->ConsoleCommand("RestartLevel");
 }
 
 void ACPlayer::Begin_Roll()
@@ -374,10 +396,10 @@ void ACPlayer::OnStateTypeChanged(EStateType InPrevType, EStateType InNewType)
 {
 	switch (InNewType)
 	{
-		case EStateType::Roll:		Begin_Roll();		break;
-		case EStateType::Backstep:	Begin_Backstep();	break;
-		case EStateType::Hitted:	Hitted();			break;
-		case EStateType::Dead:		Dead();			break;
+		case EStateType::Roll:		Begin_Roll();				break;
+		case EStateType::Backstep:	Begin_Backstep();			break;
+		case EStateType::Hitted:	Hitted(InPrevType);			break;
+		case EStateType::Dead:		Dead();						break;
 	}
 }
 

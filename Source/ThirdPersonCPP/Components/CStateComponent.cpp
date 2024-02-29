@@ -50,9 +50,9 @@ void UCStateComponent::SetDeadMode()
 
 void UCStateComponent::ChangeType(EStateType InNewType)
 {
-	EStateType prev = Type;
+	PrevType = Type;
 	Type = InNewType;
 
 	if (OnStateTypeChanged.IsBound())
-		OnStateTypeChanged.Broadcast(prev, InNewType);
+		OnStateTypeChanged.Broadcast(PrevType, InNewType);
 }

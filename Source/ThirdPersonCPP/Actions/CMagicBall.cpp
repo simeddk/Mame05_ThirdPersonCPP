@@ -29,6 +29,7 @@ void ACMagicBall::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActo
 {
 	CheckTrue(OtherActor == GetOwner());
 
+
 	//Play ImpactPartice
 	if (!!Data.Effect)
 	{

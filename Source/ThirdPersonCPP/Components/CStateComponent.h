@@ -60,6 +60,7 @@ private:
 
 public:
 	FORCEINLINE EStateType GetType() { return Type; }
+	FORCEINLINE EStateType GetPrevType() { return PrevType; }
 
 
 public:
@@ -69,4 +70,5 @@ public:
 
 private:
 	EStateType Type;
+	EStateType PrevType;
 };

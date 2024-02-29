@@ -52,6 +52,8 @@ void UCBTService_Melee::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 	//No Perceived Player
 	if (player == nullptr)
 	{
+		controller->ClearFocus(EAIFocusPriority::LastFocusPriority);
+
 		if (patrolComp != nullptr && patrolComp->IsPathValid())
 		{
 			behaviorComp->SetPatrolMode();
@@ -63,6 +65,7 @@ void UCBTService_Melee::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeM
 	}
 
 	//Perceived Player
+	controller->SetFocus(player);
 	float distance = enemy->GetDistanceTo(player);
 
 	//In BehaviorRange

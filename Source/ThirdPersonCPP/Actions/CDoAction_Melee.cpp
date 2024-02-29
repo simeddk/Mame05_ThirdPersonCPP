@@ -63,12 +63,13 @@ void ACDoAction_Melee::OnAttachmentBeginOverlap(UPrimitiveComponent* InOverlappe
 
 	CheckFalse(prevHittedCharactersNum < HittedCharacters.Num());
 	
+	//Take Damage
 	FDamageEvent damageEvent;
 	InOtherCharacter->TakeDamage(Datas[ComboCount].Power, damageEvent, InAttacker->GetController(), InCauser);
 	
 	//Hit Stop
 	float hitStop = Datas[ComboCount].HitStop;
-	if (FMath::IsNearlyZero(hitStop) == false)
+	if (FMath::IsNearlyZero(hitStop) == false && UGameplayStatics::GetGlobalTimeDilation(GetWorld()) >= 1.f)
 	{
 		UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 2e-2f);
 		UKismetSystemLibrary::K2_SetTimer(this, "ResetGlobalTimeDilation", hitStop * 2e-2f, false);
