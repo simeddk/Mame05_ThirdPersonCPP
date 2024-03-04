@@ -30,10 +30,10 @@ void ACHUD::DrawHUD()
 	CheckNull(StateTypeAsUEnum);
 
 	FString typeStr = StateTypeAsUEnum->GetNameStringByValue((int64)StateComp->GetType());
-	DrawText(typeStr, FLinearColor::Red, 10, Canvas->ClipY - 50, nullptr, 2.f);
+	DrawText("Current State : " + typeStr, FLinearColor::Red, 10, Canvas->ClipY - 50, nullptr, 2.f);
 
 	typeStr = StateTypeAsUEnum->GetNameStringByValue((int64)StateComp->GetPrevType());
-	DrawText(typeStr, FLinearColor::Green, 10, Canvas->ClipY - 100, nullptr, 2.f);
+	DrawText("Previous State : " + typeStr, FLinearColor::Green, 10, Canvas->ClipY - 75, nullptr, 2.f);
 
 	//Visible Aim(R-Button)
 	CheckNull(CrossHairTexture);
