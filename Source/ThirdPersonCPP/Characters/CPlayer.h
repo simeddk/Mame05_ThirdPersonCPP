@@ -41,12 +41,12 @@ private:
 	void OnWalk();
 	void OffWalk();
 
-	void OnFist();
-	void OnOneHand();
-	void OnTwoHand();
-	void OnMagicBall();
-	void OnWarp();
-	void OnTornado();
+	UFUNCTION() void OnFist();
+	UFUNCTION() void OnOneHand();
+	UFUNCTION() void OnTwoHand();
+	UFUNCTION() void OnMagicBall();
+	UFUNCTION() void OnWarp();
+	UFUNCTION() void OnTornado();
 
 	void OnDoAction();
 
@@ -55,6 +55,8 @@ private:
 
 	void OnSelectAction();
 	void OffSelectAction();
+
+	void OnInteract();
 
 	void Hitted(EStateType InPrevType);
 	void Dead();
@@ -76,6 +78,7 @@ public:
 
 public:
 	virtual void SetBodyColor(FLinearColor InColor) override;
+	FORCEINLINE class UCSelectActionWidget* GetSelectActionWidget() { return SelectActionWidget; }
 
 private:
 	UFUNCTION()

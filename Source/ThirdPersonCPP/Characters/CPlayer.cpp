@@ -15,6 +15,7 @@
 #include "Actions/CActionData.h"
 #include "Widgets/CPlayerHealthWidget.h"
 #include "Widgets/CSelectActionWidget.h"
+#include "Widgets/CSelectActionItemWidget.h"
 
 ACPlayer::ACPlayer()
 {
@@ -105,6 +106,13 @@ void ACPlayer::BeginPlay()
 	CheckNull(SelectActionWidget);
 	SelectActionWidget->AddToViewport();
 	SelectActionWidget->SetVisibility(ESlateVisibility::Hidden);
+
+	SelectActionWidget->GetItemWidget("Item1")->OnImageButtonPressed.AddDynamic(this, &ACPlayer::OnFist);
+	SelectActionWidget->GetItemWidget("Item2")->OnImageButtonPressed.AddDynamic(this, &ACPlayer::OnOneHand);
+	SelectActionWidget->GetItemWidget("Item3")->OnImageButtonPressed.AddDynamic(this, &ACPlayer::OnTwoHand);
+	SelectActionWidget->GetItemWidget("Item4")->OnImageButtonPressed.AddDynamic(this, &ACPlayer::OnMagicBall);
+	SelectActionWidget->GetItemWidget("Item5")->OnImageButtonPressed.AddDynamic(this, &ACPlayer::OnWarp);
+	SelectActionWidget->GetItemWidget("Item6")->OnImageButtonPressed.AddDynamic(this, &ACPlayer::OnTornado);
 }
 
 void ACPlayer::Tick(float DeltaTime)
@@ -139,6 +147,8 @@ void ACPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 	PlayerInputComponent->BindAction("SelectAction", EInputEvent::IE_Pressed, this, &ACPlayer::OnSelectAction);
 	PlayerInputComponent->BindAction("SelectAction", EInputEvent::IE_Released, this, &ACPlayer::OffSelectAction);
+
+	PlayerInputComponent->BindAction("Interact", EInputEvent::IE_Pressed, this, &ACPlayer::OnInteract);
 }
 
 FGenericTeamId ACPlayer::GetGenericTeamId() const
@@ -318,10 +328,32 @@ void ACPlayer::OffSelectAction()
 	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.f);
 }
 
+void ACPlayer::OnInteract()
+{
+	FVector start = GetActorLocation();
+	FVector end = start + Camera->GetForwardVector() * 150.f;
+
+	//Todo. ¹¹¤¿¶ó°í???
+	//TArray<AActor*> ignores;
+	//ignores.Add(this); 
+
+	//UKismetSystemLibrary::LineTraceSingle
+	//(
+	//	GetWorld(),
+	//	start,
+	//	end,
+	//	UEngineTypes::ConvertToTraceType(ECollisionChannel::ECC_Visibility),
+	//	true,
+
+
+	//);
+}
+
 void ACPlayer::Hitted(EStateType InPrevType)
 {
-	if (OnHittedEvent.IsBound())
-		OnHittedEvent.Broadcast();
+	//Todo. It makes idle state force
+	/*if (OnHittedEvent.IsBound())
+		OnHittedEvent.Broadcast();*/
 
 	Status->SetStop();
 	Montages->PlayHitted();

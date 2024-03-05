@@ -103,7 +103,8 @@ void UCActionComponent::AbortedByDamaged()
 	CheckNull(Datas[(int32)Type]->GetEquipment());
 
 	Datas[(int32)Type]->GetEquipment()->Begin_Equip();
-	Datas[(int32)Type]->GetEquipment()->End_Equip();
+	//Todo. It makes idle state force
+	//Datas[(int32)Type]->GetEquipment()->End_Equip();
 	
 	CheckNull(Datas[(int32)Type]->GetDoAction());
 	Datas[(int32)Type]->GetDoAction()->Abort();

@@ -92,8 +92,8 @@ void ACAIController::Tick(float DeltaTime)
 		}
 
 		//Draw Debug Circle
-		DrawDebugCircle(GetWorld(), center, Sight->SightRadius, 300, FColor::Green, false, -1.0f, 0, 0, FVector::RightVector, FVector::ForwardVector);
-		DrawDebugCircle(GetWorld(), center, BehaviorRange, 300, FColor::Red, false, -1.0f, 0, 0, FVector::RightVector, FVector::ForwardVector);
+		DrawDebugCircle(GetWorld(), center, Sight->SightRadius, 300, FColor::Green, false, -1.0f, 0, 2, FVector::RightVector, FVector::ForwardVector);
+		DrawDebugCircle(GetWorld(), center, BehaviorRange, 300, FColor::Red, false, -1.0f, 0, 2, FVector::RightVector, FVector::ForwardVector);
 	}
 }
 

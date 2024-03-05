@@ -2,6 +2,7 @@
 #include "Global.h"
 #include "Components/CStateComponent.h"
 #include "Components/CStatusComponent.h"
+#include "Characters/CPlayer.h"
 
 FString UCAnimNotify_Idle::GetNotifyName_Implementation() const
 {
@@ -21,4 +22,10 @@ void UCAnimNotify_Idle::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBa
 
 	stateComp->SetIdleMode();
 	statusComp->SetMove();
+
+	//Todo. Not Good....
+	ACPlayer* player = Cast<ACPlayer>(MeshComp->GetOwner());
+	CheckNull(player);
+	if (player->OnHittedEvent.IsBound())
+		player->OnHittedEvent.Broadcast();
 }
