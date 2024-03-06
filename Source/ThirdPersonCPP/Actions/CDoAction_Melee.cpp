@@ -53,6 +53,14 @@ void ACDoAction_Melee::End_DoAction()
 	StatusComp->SetMove();
 }
 
+void ACDoAction_Melee::Abort()
+{
+	Super::Abort();
+
+	bSucceed = false;
+	ComboCount = 0;
+}
+
 void ACDoAction_Melee::OnAttachmentBeginOverlap(UPrimitiveComponent* InOverlappedComponent, ACharacter* InAttacker, AActor* InCauser, ACharacter* InOtherCharacter)
 {
 	Super::OnAttachmentBeginOverlap(InOverlappedComponent, InAttacker, InCauser, InOtherCharacter);

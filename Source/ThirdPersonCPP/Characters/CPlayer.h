@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Components/CStateComponent.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "ICharacter.h"
 #include "GenericTeamAgentInterface.h"
 #include "CPlayer.generated.h"
@@ -124,6 +125,9 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Widget")
 		TSubclassOf<class UCSelectActionWidget> SelectActionWidgetClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Interact")
+		TEnumAsByte<EDrawDebugTrace::Type> DebugInteractType = EDrawDebugTrace::ForDuration;
 
 public:
 	UPROPERTY(BlueprintAssignable)

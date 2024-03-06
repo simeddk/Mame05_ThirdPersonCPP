@@ -2,16 +2,17 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Components/TimelineComponent.h"
 #include "IInteractable.h"
-#include "CDoor.generated.h"
+#include "CSplineActor.generated.h"
 
 UCLASS()
-class THIRDPERSONCPP_API ACDoor : public AActor, public IIInteractable
+class THIRDPERSONCPP_API ACSplineActor : public AActor, public IIInteractable
 {
 	GENERATED_BODY()
 	
 public:	
-	ACDoor();
+	ACSplineActor();
 
 protected:
 	virtual void BeginPlay() override;
@@ -23,26 +24,27 @@ public:
 	virtual void Interact(class ACharacter* InCharacter) override;
 
 private:
+	UFUNCTION()
+		void StartTimeline(float Output);
+
+private:
 	UPROPERTY(VisibleDefaultsOnly)
 		class USceneComponent* Root;
 
 	UPROPERTY(VisibleDefaultsOnly)
-		class UBoxComponent* Box;
+		class UStaticMeshComponent* Mesh;
 
 	UPROPERTY(VisibleDefaultsOnly)
-		class UStaticMeshComponent* DoorFrame;
-
-	UPROPERTY(VisibleDefaultsOnly)
-		class UStaticMeshComponent* Door;
+		class UCameraComponent* Camera;
 
 private:
 	UPROPERTY(EditAnywhere)
-		float MaxYaw = 130.f;
+		class UCurveFloat* Curve;
 
 	UPROPERTY(EditAnywhere)
-		float ConstantRatio = 0.05f;
+		class ACSpline* Spline;
 
 private:
-	float MaxYawWithDirection;
-	bool bOpen;
+	FTimeline Timeline;
+	class USplineComponent* SplineComp;
 };
