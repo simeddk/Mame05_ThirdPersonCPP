@@ -55,7 +55,7 @@ void ACDoor::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	FRotator currentRotation = Door->GetRelativeRotation();
-	CLog::Print(currentRotation, 1);
+	//CLog::Print(currentRotation, 1);
 
 	if (bOpen)
 	{

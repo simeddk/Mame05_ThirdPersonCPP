@@ -26,6 +26,12 @@ void UCAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 	FRotator controlRotation = FRotator(0, ownerCharacter->GetControlRotation().Yaw, 0);
 	Direction = CalculateDirection(ownerCharacter->GetVelocity(), controlRotation);
+
+	UCFeetComponent* feetComp = CHelpers::GetComponent<UCFeetComponent>(ownerCharacter);
+	CheckNull(feetComp);
+
+	FeetData = feetComp->GetData();
+	//Todo. ABP
 	
 }
 
