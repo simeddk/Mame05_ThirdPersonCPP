@@ -45,7 +45,7 @@ public:
  	FORCEINLINE const FFeetData& GetData() { return Data; }
 
 private:
-	void Trace(FName InSocketName, float& OutDistance);
+	void Trace(FName InSocketName, float& OutDistance, FRotator& OutRotation);
 
 protected:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "IK")

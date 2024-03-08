@@ -24,20 +24,28 @@ void UCFeetComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActor
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	float leftDistance;
-	Trace(LeftSocketName, leftDistance);
+	FRotator leftRotation;
+	Trace(LeftSocketName, leftDistance, leftRotation);
 
 	float rightDistance;
-	Trace(RightSocketName, rightDistance);
+	FRotator rightRotation;
+	Trace(RightSocketName, rightDistance, rightRotation);
 
 	float airDistance = FMath::Min(leftDistance, rightDistance);
 
 	Data.LeftDistance.X = UKismetMathLibrary::FInterpTo(Data.LeftDistance.X, leftDistance - airDistance, DeltaTime, InterpSpeed);
-	Data.RightDistance.X = UKismetMathLibrary::FInterpTo(Data.RightDistance.X, rightDistance - airDistance, DeltaTime, InterpSpeed);
+	Data.RightDistance.X = UKismetMathLibrary::FInterpTo(Data.RightDistance.X, -(rightDistance - airDistance), DeltaTime, InterpSpeed);
+
+	Data.LeftRotation = UKismetMathLibrary::RInterpTo(Data.LeftRotation, leftRotation, DeltaTime, InterpSpeed);
+	Data.RightRotation = UKismetMathLibrary::RInterpTo(Data.RightRotation, rightRotation, DeltaTime, InterpSpeed);
+
+	Data.PelvisDistance.Z = UKismetMathLibrary::FInterpTo(Data.PelvisDistance.Z, airDistance, DeltaTime, InterpSpeed);
 }
 
-void UCFeetComponent::Trace(FName InSocketName, float& OutDistance)
+void UCFeetComponent::Trace(FName InSocketName, float& OutDistance, FRotator& OutRotation)
 {
 	OutDistance = 0.f;
+	OutRotation = FRotator::ZeroRotator;
 
 	FVector socketLocation = OwnerCharacter->GetMesh()->GetSocketLocation(InSocketName);
 	FVector start = FVector(socketLocation.X, socketLocation.Y, OwnerCharacter->GetActorLocation().Z);
@@ -68,7 +76,16 @@ void UCFeetComponent::Trace(FName InSocketName, float& OutDistance)
 	CheckFalse(hitResult.bBlockingHit);
 	
 	float undergroundLegnth = (hitResult.ImpactPoint - hitResult.TraceEnd).Size();
-	OutDistance = CorrectionValue + undergroundLegnth - Extension; //????
+	OutDistance = CorrectionValue + undergroundLegnth - Extension;
 
+	FVector normal = hitResult.ImpactNormal;
+
+	float pitch = -UKismetMathLibrary::DegAtan2(normal.X, normal.Z);
+	float roll = UKismetMathLibrary::DegAtan2(normal.Y, normal.Z);
+
+	pitch = FMath::Clamp(pitch, -30.f, +30.f);
+	roll = FMath::Clamp(roll, -15.f, +15.f);
+
+	OutRotation = FRotator(pitch, 0.f, roll);
 }
 
