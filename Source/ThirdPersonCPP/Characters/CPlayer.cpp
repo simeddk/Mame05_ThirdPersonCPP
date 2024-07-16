@@ -407,6 +407,7 @@ void ACPlayer::Dead()
 
 	DisableInput(GetController<APlayerController>());
 
+	//HACK 01. Slomo
 	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.25f);
 
 	//End Dead Timer
