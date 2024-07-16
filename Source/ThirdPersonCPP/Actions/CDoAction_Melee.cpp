@@ -70,11 +70,13 @@ void ACDoAction_Melee::OnAttachmentBeginOverlap(UPrimitiveComponent* InOverlappe
 	HittedCharacters.AddUnique(InOtherCharacter);
 
 	CheckFalse(prevHittedCharactersNum < HittedCharacters.Num());
-	
+
+	//Hack 02. TakeDamage가 HitStop보다 위에 있어야 한다.
 	//Take Damage
 	FDamageEvent damageEvent;
 	InOtherCharacter->TakeDamage(Datas[ComboCount].Power, damageEvent, InAttacker->GetController(), InCauser);
-	
+
+	//Hack 03. UGameplayStatics::GetGlobalTimeDilation(GetWorld()) >= 1.f : 정상적인 게임 속도에서만 히트스탑을 걸어야 한다.(Slomo 중인 경우는 SKip)
 	//Hit Stop
 	float hitStop = Datas[ComboCount].HitStop;
 	if (FMath::IsNearlyZero(hitStop) == false && UGameplayStatics::GetGlobalTimeDilation(GetWorld()) >= 1.f)
